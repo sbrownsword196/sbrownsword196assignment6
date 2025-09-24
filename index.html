@@ -13,13 +13,14 @@
         
         body {
             font-family: 'Georgia', serif;
-            line-height: 1.6;
+            line-height: 1.7;
             color: #2c3e50;
             overflow-x: hidden;
+            background: #fafafa;
         }
         
         .progress-bar {
-            height: 4px;
+            height: 3px;
             background: linear-gradient(90deg, #f1c40f, #e67e22, #e74c3c);
             position: fixed;
             top: 0;
@@ -36,7 +37,7 @@
             backdrop-filter: blur(10px);
             padding: 15px 20px;
             z-index: 1000;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #e0e0e0;
             transform: translateY(-100%);
             transition: transform 0.3s ease;
         }
@@ -46,7 +47,7 @@
         }
         
         .header-content {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
@@ -71,6 +72,17 @@
             overflow: hidden;
         }
         
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+        
         .hero-content {
             z-index: 2;
             max-width: 800px;
@@ -82,6 +94,7 @@
             margin-bottom: 20px;
             opacity: 0;
             animation: fadeInUp 1s ease 0.5s forwards;
+            font-weight: normal;
         }
         
         .hero .subtitle {
@@ -89,12 +102,14 @@
             margin-bottom: 30px;
             opacity: 0;
             animation: fadeInUp 1s ease 1s forwards;
+            font-weight: 300;
         }
         
         .hero .byline {
             font-style: italic;
             opacity: 0;
             animation: fadeInUp 1s ease 1.5s forwards;
+            font-size: 1.1rem;
         }
         
         @keyframes fadeInUp {
@@ -108,88 +123,15 @@
             }
         }
         
-        /* Animated Bees */
-        .bee {
-            position: absolute;
-            width: 30px;
-            height: 20px;
-            background: linear-gradient(45deg, #f1c40f 0%, #f39c12 50%, #d68910 100%);
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-            opacity: 0.8;
-        }
-        
-        .bee::before {
-            content: '';
-            position: absolute;
-            top: -5px;
-            right: -10px;
-            width: 15px;
-            height: 15px;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 50%;
-            animation: wingFlap 0.3s ease-in-out infinite alternate;
-        }
-        
-        .bee::after {
-            content: '';
-            position: absolute;
-            top: -5px;
-            left: -10px;
-            width: 15px;
-            height: 15px;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 50%;
-            animation: wingFlap 0.3s ease-in-out infinite alternate;
-        }
-        
-        @keyframes wingFlap {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(15deg); }
-        }
-        
-        .bee-1 {
-            top: 20%;
-            left: 10%;
-            animation: float1 8s ease-in-out infinite;
-        }
-        
-        .bee-2 {
-            top: 60%;
-            right: 15%;
-            animation: float2 10s ease-in-out infinite;
-        }
-        
-        .bee-3 {
-            top: 40%;
-            left: 80%;
-            animation: float3 12s ease-in-out infinite;
-        }
-        
-        @keyframes float1 {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(30px, -20px) rotate(5deg); }
-            50% { transform: translate(-20px, -40px) rotate(-3deg); }
-            75% { transform: translate(40px, -10px) rotate(7deg); }
-        }
-        
-        @keyframes float2 {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            33% { transform: translate(-40px, 30px) rotate(-5deg); }
-            66% { transform: translate(20px, -25px) rotate(4deg); }
-        }
-        
-        @keyframes float3 {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(-50px, 20px) rotate(-8deg); }
-        }
-        
         .content-section {
-            padding: 80px 20px;
+            padding: 60px 20px;
             max-width: 800px;
             margin: 0 auto;
             opacity: 0;
-            transform: translateY(50px);
-            transition: all 0.8s ease;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+            background: white;
+            margin-bottom: 1px;
         }
         
         .content-section.visible {
@@ -198,62 +140,65 @@
         }
         
         .content-section h2 {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             margin-bottom: 30px;
             color: #2c3e50;
+            font-weight: normal;
+            border-bottom: 3px solid #e67e22;
+            padding-bottom: 10px;
+            display: inline-block;
         }
         
         .content-section p {
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             margin-bottom: 25px;
             text-align: justify;
+            color: #444;
+            line-height: 1.8;
+        }
+        
+        .stat-section {
+            background: #ecf0f1;
+            padding: 60px 20px;
+            margin: 40px 0;
+            text-align: center;
         }
         
         .stat-container {
-            background: linear-gradient(135deg, #fff5f5, #ffe8e8);
-            padding: 60px 20px;
-            margin: 60px 0;
-            border-radius: 15px;
-            text-align: center;
-            border: 2px solid #e74c3c;
-            position: relative;
-            overflow: hidden;
+            max-width: 800px;
+            margin: 0 auto;
         }
         
-        .stat-container::before {
-            content: '⚠️';
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+        .stat-container h2 {
             font-size: 2rem;
+            margin-bottom: 40px;
+            color: #e74c3c;
+            font-weight: normal;
         }
         
         .crisis-stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            max-width: 800px;
-            margin: 40px auto 0;
+            gap: 30px;
         }
         
         .stat-item {
-            opacity: 0;
-            transform: scale(0.8);
-            transition: all 0.8s ease;
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(231, 76, 60, 0.2);
+            padding: 30px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
         }
         
         .stat-item.animate {
             opacity: 1;
-            transform: scale(1);
+            transform: translateY(0);
         }
         
         .stat-number {
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: bold;
             color: #e74c3c;
             display: block;
@@ -261,231 +206,109 @@
         }
         
         .stat-label {
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: #555;
             line-height: 1.4;
         }
         
-        /* Meadow Transformation */
-        .transformation-section {
-            min-height: 100vh;
-            background: linear-gradient(to bottom, #87ceeb 0%, #98fb98 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .transformation-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 40px 20px;
+        .quote-section {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+            padding: 60px 20px;
+            margin: 40px 0;
             text-align: center;
         }
         
-        .transformation-title {
-            color: white;
-            font-size: 2.5rem;
-            margin-bottom: 40px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .campus-view {
-            position: relative;
-            width: 100%;
-            max-width: 600px;
-            height: 300px;
+        .quote-content {
+            max-width: 700px;
             margin: 0 auto;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         
-        .lawn-layer {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, #32cd32 0%, #228b22 100%);
-            transition: opacity 2s ease;
+        .quote-text {
+            font-size: 1.4rem;
+            font-style: italic;
+            line-height: 1.6;
+            margin-bottom: 20px;
         }
         
-        .meadow-layer {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, #daa520 20%, #8fbc8f 50%, #228b22 80%);
-            opacity: 0;
-            transition: opacity 2s ease;
+        .quote-author {
+            font-size: 1rem;
+            opacity: 0.9;
         }
         
-        .meadow-layer.visible {
-            opacity: 1;
+        .campus-transformation {
+            background: #f8f9fa;
+            padding: 60px 20px;
+            text-align: center;
         }
         
-        /* Flowers */
-        .flower {
-            position: absolute;
-            bottom: 20px;
-            opacity: 0;
-            transition: all 1.5s ease;
-        }
-        
-        .flower.bloom {
-            opacity: 1;
-            transform: scale(1);
-        }
-        
-        .flower-1 { left: 15%; animation-delay: 0.5s; }
-        .flower-2 { left: 35%; animation-delay: 1s; }
-        .flower-3 { left: 55%; animation-delay: 1.5s; }
-        .flower-4 { left: 75%; animation-delay: 2s; }
-        .flower-5 { left: 25%; bottom: 40px; animation-delay: 2.5s; }
-        .flower-6 { left: 65%; bottom: 35px; animation-delay: 3s; }
-        
-        .flower::before {
-            content: '🌻';
-            font-size: 20px;
-            display: block;
-        }
-        
-        .flower-2::before { content: '🌼'; }
-        .flower-3::before { content: '🌺'; }
-        .flower-4::before { content: '🌸'; }
-        .flower-5::before { content: '🌷'; }
-        .flower-6::before { content: '🌻'; }
-        
-        .diversity-section {
-            background: #2c3e50;
-            color: white;
-            padding: 100px 20px;
-            position: relative;
-        }
-        
-        .ecosystem-web {
+        .transformation-content {
             max-width: 800px;
             margin: 0 auto;
-            position: relative;
-            height: 400px;
         }
         
-        .ecosystem-node {
-            position: absolute;
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            opacity: 0;
-            transform: scale(0);
-        }
-        
-        .ecosystem-node.animate {
-            opacity: 1;
-            transform: scale(1);
-        }
-        
-        .ecosystem-node:hover {
-            transform: scale(1.2);
-        }
-        
-        .node-bee { 
-            top: 50px; 
-            left: 50px; 
-            background: linear-gradient(135deg, #f1c40f, #f39c12);
-            animation-delay: 0.5s;
-        }
-        .node-butterfly { 
-            top: 100px; 
-            right: 80px; 
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
-            animation-delay: 1s;
-        }
-        .node-flower { 
-            bottom: 100px; 
-            left: 100px; 
-            background: linear-gradient(135deg, #9b59b6, #8e44ad);
-            animation-delay: 1.5s;
-        }
-        .node-tree { 
-            bottom: 50px; 
-            right: 50px; 
-            background: linear-gradient(135deg, #27ae60, #229954);
-            animation-delay: 2s;
-        }
-        .node-bird { 
-            top: 150px; 
-            left: 50%; 
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            animation-delay: 2.5s;
-        }
-        
-        .ecosystem-node::before {
-            content: '🐝';
-        }
-        
-        .node-butterfly::before { content: '🦋'; }
-        .node-flower::before { content: '🌸'; }
-        .node-tree::before { content: '🌳'; }
-        .node-bird::before { content: '🐦'; }
-        
-        .connection-line {
-            position: absolute;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(52, 152, 219, 0.5), transparent);
-            transform-origin: left center;
-            opacity: 0;
-            transition: opacity 1s ease;
-        }
-        
-        .connection-line.visible {
-            opacity: 1;
-        }
-        
-        .success-section {
-            background: linear-gradient(135deg, #2ecc71, #27ae60);
-            color: white;
-            padding: 100px 20px;
-            text-align: center;
-        }
-        
-        .success-grid {
+        .transformation-visual {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: 1fr 1fr;
             gap: 40px;
-            max-width: 900px;
-            margin: 60px auto;
+            margin: 40px 0;
+            align-items: center;
         }
         
-        .success-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 40px 30px;
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s ease;
+        .before-after {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
-        .success-card.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .success-icon {
-            font-size: 3rem;
+        .before-after h3 {
+            font-size: 1.3rem;
             margin-bottom: 20px;
-            display: block;
+            color: #2c3e50;
+        }
+        
+        .lawn-visual {
+            height: 120px;
+            background: linear-gradient(to bottom, #32cd32, #228b22);
+            border-radius: 5px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .meadow-visual {
+            height: 120px;
+            background: linear-gradient(to bottom, #daa520 20%, #8fbc8f 50%, #228b22 80%);
+            border-radius: 5px;
+            margin-bottom: 15px;
+            position: relative;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+        
+        .meadow-visual.visible {
+            opacity: 1;
+        }
+        
+        .meadow-visual::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 2px,
+                rgba(255,255,255,0.1) 2px,
+                rgba(255,255,255,0.1) 4px
+            );
+            border-radius: 3px;
         }
         
         .cta-section {
-            background: #34495e;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
             color: white;
             padding: 80px 20px;
             text-align: center;
@@ -493,30 +316,22 @@
         
         .cta-button {
             display: inline-block;
-            padding: 20px 40px;
-            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            padding: 18px 35px;
+            background: linear-gradient(135deg, #e67e22, #f39c12);
             color: white;
             text-decoration: none;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 1.2rem;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 1.1rem;
             margin-top: 30px;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 20px rgba(46, 204, 113, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(46, 204, 113, 0.6);
-        }
-        
-        .floating-pollinator {
-            position: fixed;
-            pointer-events: none;
-            z-index: 100;
-            font-size: 24px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(230, 126, 34, 0.4);
         }
         
         .scroll-indicator {
@@ -526,6 +341,7 @@
             transform: translateX(-50%);
             color: white;
             animation: bounce 2s infinite;
+            opacity: 0.7;
         }
         
         @keyframes bounce {
@@ -535,23 +351,26 @@
         }
         
         @media (max-width: 768px) {
-            .ecosystem-web {
-                height: 300px;
-            }
-            
-            .ecosystem-node {
-                width: 60px;
-                height: 60px;
-                font-size: 1.5rem;
-            }
-            
-            .campus-view {
-                height: 200px;
+            .content-section {
+                padding: 40px 20px;
             }
             
             .crisis-stats {
                 grid-template-columns: 1fr;
                 gap: 20px;
+            }
+            
+            .transformation-visual {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .content-section h2 {
+                font-size: 1.8rem;
             }
         }
     </style>
@@ -561,16 +380,12 @@
     
     <header class="header">
         <div class="header-content">
-            <div class="logo">🐝 Pollinator Story</div>
-            <div>Environmental Conservation</div>
+            <div class="logo">Pollinator Conservation</div>
+            <div>Environmental Science</div>
         </div>
     </header>
     
     <section class="hero">
-        <div class="bee bee-1"></div>
-        <div class="bee bee-2"></div>
-        <div class="bee bee-3"></div>
-        
         <div class="hero-content">
             <h1>Saving Our Pollinators</h1>
             <p class="subtitle">How One Ecologist is Fighting to Protect Nature's Most Important Workers</p>
@@ -585,125 +400,103 @@
     </section>
     
     <section class="content-section">
-        <h2>A Mission Across America</h2>
-        <p>From the rolling hills of the Hudson Valley to the coastal charm of Martha's Vineyard, pollinator ecologist Molly Jacobson travels with a critical message. Her lectures draw packed audiences, but the real work happens back home in Syracuse, New York, where she meticulously studies the bees, butterflies, wasps, and moths that keep our ecosystems alive.</p>
-        <p>Jacobson's entire career has been dedicated to solving one of our most pressing environmental crises: the massive decline in pollinator populations that threatens both biodiversity and food security worldwide.</p>
+        <p>Traveling from the Hudson Valley to Martha's Vineyard, pollinator ecologist Molly Jacobson spends a lot of her time educating communities about their native pollinator problems. Her entire career has been dedicated to solving the ongoing problem of dying bees, and hosting traveling lectures is a big part of that. Another part happens back home in Syracuse, New York, where Jacobson spends her time collecting from nearby nature and then closely studying all manner of bees, butterflies, wasps and moths.</p>
     </section>
     
-    <section class="content-section">
+    <section class="stat-section">
         <div class="stat-container">
-            <h2 style="color: #e74c3c; margin-bottom: 30px;">The Pollinator Crisis</h2>
+            <h2>The Scale of the Crisis</h2>
             <div class="crisis-stats">
                 <div class="stat-item">
                     <span class="stat-number" data-target="40">0</span>
-                    <span class="stat-label">% of pollinating species at risk of extinction</span>
+                    <span class="stat-label">% of pollinating species are potentially at risk for extinction</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-number" data-target="15">0</span>
-                    <span class="stat-label">billion dollars in US agricultural value depends on pollinators annually</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" data-target="75">0</span>
-                    <span class="stat-label">% of the world's flowering plants rely on animal pollination</span>
+                    <span class="stat-label">billion dollars worth of US agricultural production depends on pollination annually</span>
                 </div>
             </div>
         </div>
     </section>
     
     <section class="content-section">
-        <h2>The Bee Campus Revolution</h2>
-        <p>In April 2022, SUNY College of Environmental Science and Forestry became an official Bee Campus USA affiliate, with Jacobson leading the charge as co-chair. This national initiative represents a growing movement among universities and cities to create sanctuaries for native pollinators.</p>
-        <p>Recruiting students wasn't difficult—when your entire school is dedicated to environmental science, the appeal of increased campus biodiversity resonates with everyone from botany enthusiasts to birdwatchers.</p>
-    </section>
-    
-    <section class="transformation-section">
-        <div class="transformation-container">
-            <h2 class="transformation-title">Transforming the Campus</h2>
-            <p style="color: white; font-size: 1.3rem; margin-bottom: 40px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">Watch as the manicured quad becomes a thriving pollinator meadow</p>
-            
-            <div class="campus-view">
-                <div class="lawn-layer"></div>
-                <div class="meadow-layer">
-                    <div class="flower flower-1"></div>
-                    <div class="flower flower-2"></div>
-                    <div class="flower flower-3"></div>
-                    <div class="flower flower-4"></div>
-                    <div class="flower flower-5"></div>
-                    <div class="flower flower-6"></div>
-                </div>
-            </div>
-            
-            <p style="color: white; margin-top: 30px; font-style: italic;">"Instead of having a manicured lawn everywhere, when we teach about habitat conservation and the importance of native habitat, why would we have a big lawn?" - Molly Jacobson</p>
-        </div>
-    </section>
-    
-    <section class="content-section">
-        <h2>The Student Connection</h2>
-        <p>Brooke Shaw, a Vermont native with a deep love for nature, discovered Jacobson's work through an environmental journalism class. After learning about the challenges facing native pollinators, Shaw was inspired to join the team as a field technician.</p>
-        <p>"I was so impressed, enthralled really, with her work," Shaw recalls. Her role extends beyond data collection—she becomes an educator whenever students stop to observe the campus pollinator gardens, sharing knowledge about the critical importance of these tiny creatures.</p>
-    </section>
-    
-    <section class="diversity-section">
-        <div class="content-section" style="padding: 0; max-width: none; color: white;">
-            <h2 style="color: white; text-align: center; margin-bottom: 40px;">The Web of Life</h2>
-            <p style="text-align: center; font-size: 1.3rem; margin-bottom: 60px; max-width: 700px; margin-left: auto; margin-right: auto;">Click on each element to explore how diversity strengthens ecosystems</p>
-            
-            <div class="ecosystem-web">
-                <div class="ecosystem-node node-bee" title="Native Bees - Primary pollinators for many native plants"></div>
-                <div class="ecosystem-node node-butterfly" title="Butterflies - Pollinators and indicators of ecosystem health"></div>
-                <div class="ecosystem-node node-flower" title="Native Plants - Food and habitat for pollinators"></div>
-                <div class="ecosystem-node node-tree" title="Trees - Provide nesting sites and shelter"></div>
-                <div class="ecosystem-node node-bird" title="Birds - Control pest insects and disperse seeds"></div>
-                
-                <div class="connection-line" style="top: 90px; left: 130px; width: 200px; transform: rotate(15deg);"></div>
-                <div class="connection-line" style="top: 200px; left: 180px; width: 150px; transform: rotate(-30deg);"></div>
-                <div class="connection-line" style="bottom: 150px; left: 180px; width: 180px; transform: rotate(45deg);"></div>
-                <div class="connection-line" style="bottom: 90px; left: 150px; width: 120px; transform: rotate(-15deg);"></div>
-                <div class="connection-line" style="top: 230px; left: 90px; width: 280px; transform: rotate(8deg);"></div>
-            </div>
-            
-            <blockquote style="max-width: 600px; margin: 60px auto 0; font-size: 1.2rem; font-style: italic; text-align: center; border-left: 4px solid #2ecc71; padding-left: 20px;">
-                "The more diverse, the stronger an ecosystem is. It is more resilient and more able to function as a collective when there are specialized insects and animals and plants that co-evolve. If you get rid of one thing, a domino effect will occur."
-                <br><span style="font-size: 1rem; opacity: 0.8;">— Brooke Shaw</span>
-            </blockquote>
-        </div>
-    </section>
-    
-    <section class="success-section">
-        <h2 style="font-size: 2.5rem; margin-bottom: 30px;">Growing Success</h2>
-        <p style="font-size: 1.3rem; max-width: 700px; margin: 0 auto 40px;">The Bee Campus initiative thrives on the same principles as the ecosystems it protects—diversity, collaboration, and interconnectedness.</p>
+        <p>Research has shown that up to 40% of pollinating species are potentially at risk for extinction due to factors such as pesticide use, habitat destruction and climate change. Every year, in the United States alone, billions of dollars worth of agricultural production depend on pollination.</p>
         
-        <div class="success-grid">
-            <div class="success-card">
-                <span class="success-icon">🎓</span>
-                <h3>Student Engagement</h3>
-                <p>Drawing students from botany to ornithology, creating interdisciplinary collaboration</p>
+        <p>In April of 2022, the State University of New York College of Environmental Science and Forestry (SUNY-ESF) became an official affiliate of Bee Campus USA–a national initiative in universities and cities across the country focused on conserving the populations of native pollinators–with Jacobson leading the charge as co-chair. Over the past few years, she and her team have worked to make SUNY-ESF's campus a more habitable and attractive place for native pollinators.</p>
+        
+        <p>Recruiting students to the program was not hard, according to Jacobson. With an entire school dedicated to the study of environmental science, the draw of increased biodiversity on campus through Bee Campus projects was appealing to all sorts of students. Whether they were students focused on botany, or students interested in birds, everyone could benefit from Bee Campus.</p>
+    </section>
+    
+    <section class="content-section">
+        <p>Brooke Shaw, a student at SUNY-ESF, met Jacobson after choosing to feature her work for Bee Campus in an environmental journalism class, and after speaking with her, Shaw got a better understanding of the current issues facing native pollinators. She applied for the field technician position soon after.</p>
+        
+        <p>"I was so impressed, enthralled really, with her work," said Shaw, of Jacobson.</p>
+        
+        <p>Growing up in a rural part of Vermont, Shaw has always felt a deep love for nature. After taking an environmental science class in high school, she knew she wanted to commit her life to protecting the world around her. Every being deserves a chance at a happy, healthy life, according to Shaw.</p>
+    </section>
+    
+    <section class="quote-section">
+        <div class="quote-content">
+            <p class="quote-text">"Anyone has the capacity to tap into a love and a drive that propels them in a positive way. I think that a lot of times, the ability to rest on one's laurels comes from difficult experiences, but I think that [difficult experiences] can also humble you, and give you the perspective of wanting to give what you can."</p>
+            <p class="quote-author">— Brooke Shaw</p>
+        </div>
+    </section>
+    
+    <section class="content-section">
+        <p>And with that love, Shaw committed herself to the work of Bee Campus. Along with hands-on work collecting pollinators for Jacobson to study, educating others also took up a big part of her time. If she saw students observing the quad meadow or pollinator garden on campus, she would often take a minute to speak with them, and help educate them on the importance of native pollinators.</p>
+        
+        <p>One project worked on by the members of Bee Campus was the creation of a meadow out of a chunk of SUNY-ESF's main quad. This project was completed under the guidance of Jacobson and Sam Quinn, the Director of Conservation on Private Lands Initiative at SUNY-ESF. Quinn and his team have worked on similar projects in the past within central New York, helping landowners around Skaneateles Lake convert their lawns or land into meadows.</p>
+        
+        <p>Last year, Jacobson went to Quinn with her idea to turn part of the quad into a meadow. She then worked to figure out what types of plants should be used in order to bring in more native pollinators and overall diversify the ecosystem beyond.</p>
+        
+        <p>"We collaborate because obviously, I make the habitat for the pollinators she studies," said Quinn.</p>
+    </section>
+    
+    <section class="campus-transformation">
+        <div class="transformation-content">
+            <h2>Campus Transformation</h2>
+            <p>Alongside interested students, they were able to convert a large part of the quad into a biodiverse meadow.</p>
+            
+            <div class="transformation-visual">
+                <div class="before-after">
+                    <h3>Before: Manicured Lawn</h3>
+                    <div class="lawn-visual"></div>
+                    <p>Traditional campus landscaping with limited biodiversity</p>
+                </div>
+                <div class="before-after">
+                    <h3>After: Native Meadow</h3>
+                    <div class="meadow-visual"></div>
+                    <p>Diverse ecosystem supporting native pollinators and wildlife</p>
+                </div>
             </div>
-            <div class="success-card">
-                <span class="success-icon">🌾</span>
-                <h3>Habitat Creation</h3>
-                <p>Converting manicured lawns into biodiverse meadows that support native species</p>
-            </div>
-            <div class="success-card">
-                <span class="success-icon">📚</span>
-                <h3>Education & Outreach</span>
-                <p>Training students to become pollinator ambassadors in their communities</p>
-            </div>
-            <div class="success-card">
-                <span class="success-icon">🤝</span>
-                <h3>Community Partnership</h3>
-                <p>Collaborating with local landowners around Skaneateles Lake for larger impact</p>
-            </div>
+        </div>
+    </section>
+    
+    <section class="quote-section">
+        <div class="quote-content">
+            <p class="quote-text">"I think one of the big things that has really gotten student attention is just making ESF outwardly look more aligned with what we teach inwardly. And so instead of having a manicured lawn everywhere, when we teach all about Habitat Conservation and land management and the importance of native habitat, why would we have a big lawn?"</p>
+            <p class="quote-author">— Molly Jacobson</p>
+        </div>
+    </section>
+    
+    <section class="content-section">
+        <p>The quad meadow project was one of Bee Campus' biggest successes–something that attracted all types of students with all different interests, according to Jacobson. And with the help of team members like Shaw, students visiting this meadow could learn a little more about the conservation efforts of native pollinators, and how the meadow contributes to that.</p>
+        
+        <p>Just as native pollinators thrive on diversity, so does Bee Campus. Bringing together like-minded individuals connected by their love for the environment has helped establish many pollinator conservation focused projects on and off campus. The program itself follows the principles of ecological diversity Shaw defined–one based in interconnectedness.</p>
+    </section>
+    
+    <section class="quote-section">
+        <div class="quote-content">
+            <p class="quote-text">"The more diverse, the stronger an ecosystem is. It is more resilient and more able to function as a collective when there are specialized insects and animals and plants that co-evolve. If you get rid of one thing, a domino effect will occur, and it will affect all aspects of [the ecosystem]."</p>
+            <p class="quote-author">— Brooke Shaw</p>
         </div>
     </section>
     
     <section class="cta-section">
-        <h2 style="font-size: 2.5rem; margin-bottom: 30px;">Join the Movement</h2>
-        <p style="font-size: 1.3rem; max-width: 600px; margin: 0 auto;">Every garden can be a sanctuary. Every community can make a difference. The future of our pollinators—and our food system—depends on actions we take today.</p>
-        <a href="#" class="cta-button" onclick="alert('Visit beecampususa.org to find out how your community can get involved!')">Learn How to Help</a>
+        <h2 style="font-size: 2.2rem; margin-bottom: 20px; font-weight: normal;">The Future of Conservation</h2>
+        <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto; line-height: 1.6;">Through education, habitat creation, and community engagement, programs like Bee Campus USA are creating a network of pollinator sanctuaries across the country. Every campus, every community, and every individual has the power to make a difference.</p>
+        <a href="#" class="cta-button" onclick="alert('Visit beecampususa.org to learn how your community can participate in pollinator conservation!')">Learn More</a>
     </section>
-    
-    <div class="floating-pollinator">🐝</div>
 
     <script>
         // Progress bar and header visibility
@@ -721,7 +514,7 @@
         
         // Intersection Observer for animations
         const observerOptions = {
-            threshold: 0.3,
+            threshold: 0.2,
             rootMargin: '0px 0px -50px 0px'
         };
         
@@ -731,26 +524,14 @@
                     entry.target.classList.add('visible');
                     
                     // Animate statistics
-                    if (entry.target.classList.contains('stat-container')) {
+                    if (entry.target.classList.contains('stat-section')) {
                         animateStats();
                     }
                     
-                    // Animate ecosystem nodes
-                    if (entry.target.classList.contains('diversity-section')) {
-                        animateEcosystem();
-                    }
-                    
                     // Trigger meadow transformation
-                    if (entry.target.classList.contains('transformation-section')) {
+                    if (entry.target.classList.contains('campus-transformation')) {
                         setTimeout(() => {
-                            document.querySelector('.meadow-layer').classList.add('visible');
-                            setTimeout(() => {
-                                document.querySelectorAll('.flower').forEach((flower, index) => {
-                                    setTimeout(() => {
-                                        flower.classList.add('bloom');
-                                    }, index * 300);
-                                });
-                            }, 1000);
+                            document.querySelector('.meadow-visual').classList.add('visible');
                         }, 500);
                     }
                 }
@@ -758,7 +539,7 @@
         }, observerOptions);
         
         // Observe all sections
-        document.querySelectorAll('.content-section, .stat-container, .diversity-section, .transformation-section, .success-card').forEach(section => {
+        document.querySelectorAll('.content-section, .stat-section, .campus-transformation, .quote-section').forEach(section => {
             observer.observe(section);
         });
         
@@ -770,7 +551,7 @@
                     const numberEl = item.querySelector('.stat-number');
                     const target = parseInt(numberEl.dataset.target);
                     animateNumber(numberEl, target, 2000);
-                }, index * 200);
+                }, index * 300);
             });
         }
         
@@ -788,51 +569,6 @@
                 }
             }, 16);
         }
-        
-        // Animate ecosystem
-        function animateEcosystem() {
-            document.querySelectorAll('.ecosystem-node').forEach((node, index) => {
-                setTimeout(() => {
-                    node.classList.add('animate');
-                }, index * 300);
-            });
-            
-            setTimeout(() => {
-                document.querySelectorAll('.connection-line').forEach((line, index) => {
-                    setTimeout(() => {
-                        line.classList.add('visible');
-                    }, index * 200);
-                });
-            }, 2000);
-        }
-        
-        // Ecosystem node interactions
-        document.querySelectorAll('.ecosystem-node').forEach(node => {
-            node.addEventListener('click', () => {
-                const tooltip = node.getAttribute('title');
-                alert(tooltip);
-            });
-        });
-        
-        // Floating pollinator effect
-        document.addEventListener('mousemove', (e) => {
-            const pollinator = document.querySelector('.floating-pollinator');
-            pollinator.style.left = e.clientX + 10 + 'px';
-            pollinator.style.top = e.clientY + 10 + 'px';
-            pollinator.style.opacity = '1';
-            
-            clearTimeout(pollinator.timeout);
-            pollinator.timeout = setTimeout(() => {
-                pollinator.style.opacity = '0';
-            }, 1000);
-        });
-        
-        // Random pollinator icons
-        const pollinatorIcons = ['🐝', '🦋', '🌸', '🌻', '🌼'];
-        setInterval(() => {
-            const pollinator = document.querySelector('.floating-pollinator');
-            pollinator.textContent = pollinatorIcons[Math.floor(Math.random() * pollinatorIcons.length)];
-        }, 2000);
     </script>
 </body>
 </html>
