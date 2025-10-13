@@ -1,666 +1,320 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saving Our Pollinators | Interactive Story</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script>
+    // Create gradient sky texture
+    AFRAME.registerComponent('gradient-sky', {
+      init: function() {
+        console.log('Gradient sky component initialized');
+        const canvas = document.createElement('canvas');
+        canvas.width = 2048;
+        canvas.height = 1024;
+        const ctx = canvas.getContext('2d');
         
-        body {
-            font-family: 'Georgia', serif;
-            line-height: 1.7;
-            color: #2c3e50;
-            overflow-x: hidden;
-            background: #fafafa;
-        }
+        // Create vertical gradient - more sunset colors
+        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        gradient.addColorStop(0, '#4169E1');    // Royal blue at top
+        gradient.addColorStop(0.25, '#9370DB'); // Medium purple
+        gradient.addColorStop(0.45, '#DA70D6'); // Orchid/pink
+        gradient.addColorStop(0.6, '#FF69B4');  // Hot pink
+        gradient.addColorStop(0.75, '#FF8C00'); // Dark orange
+        gradient.addColorStop(0.88, '#FF4500'); // Orange red
+        gradient.addColorStop(1, '#FF6347');    // Tomato red at horizon
         
-        .progress-bar {
-            height: 3px;
-            background: linear-gradient(90deg, #f1c40f, #e67e22, #e74c3c);
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1001;
-            transition: width 0.1s ease;
-        }
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         
-        .header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 20px;
-            z-index: 1000;
-            border-bottom: 1px solid #e0e0e0;
-            transform: translateY(-100%);
-            transition: transform 0.3s ease;
-        }
-        
-        .header.visible {
-            transform: translateY(0);
-        }
-        
-        .header-content {
-            max-width: 900px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-weight: bold;
-            font-size: 18px;
-            color: #27ae60;
-        }
-        
-        .hero {
-            height: 100vh;
-            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 50%, #16a085 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
-            opacity: 0.3;
-        }
-        
-        .hero-content {
-            z-index: 2;
-            max-width: 800px;
-            padding: 0 20px;
-        }
-        
-        .hero h1 {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            margin-bottom: 20px;
-            opacity: 0;
-            animation: fadeInUp 1s ease 0.5s forwards;
-            font-weight: normal;
-        }
-        
-        .hero .subtitle {
-            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
-            margin-bottom: 30px;
-            opacity: 0;
-            animation: fadeInUp 1s ease 1s forwards;
-            font-weight: 300;
-        }
-        
-        .hero .byline {
-            font-style: italic;
-            opacity: 0;
-            animation: fadeInUp 1s ease 1.5s forwards;
-            font-size: 1.1rem;
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .content-section {
-            padding: 60px 20px;
-            max-width: 800px;
-            margin: 0 auto;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.6s ease;
-            background: white;
-            margin-bottom: 1px;
-        }
-        
-        .content-section.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .content-section h2 {
-            font-size: 2.2rem;
-            margin-bottom: 30px;
-            color: #2c3e50;
-            font-weight: normal;
-            border-bottom: 3px solid #e67e22;
-            padding-bottom: 10px;
-            display: inline-block;
-        }
-        
-        .content-section p {
-            font-size: 1.15rem;
-            margin-bottom: 25px;
-            text-align: justify;
-            color: #444;
-            line-height: 1.8;
-        }
-        
-        .stat-section {
-            background: 
-                linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(230, 126, 34, 0.1) 100%),
-                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><pattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1.5" fill="rgba(231, 76, 60, 0.1)"/></pattern></defs><rect width="100%" height="100%" fill="url(%23dots)"/></svg>');
-            padding: 80px 40px;
-            margin: 0;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .stat-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -50%;
-            width: 200%;
-            height: 100%;
-            background: linear-gradient(45deg, transparent, rgba(231, 76, 60, 0.05), transparent);
-            animation: shimmer 4s ease-in-out infinite;
-        }
-        
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            50% { transform: translateX(0%); }
-            100% { transform: translateX(100%); }
-        }
-        
-        .stat-container {
-            max-width: 900px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .stat-container h2 {
-            font-size: 2.8rem;
-            margin-bottom: 50px;
-            color: #e74c3c;
-            font-weight: 300;
-            text-shadow: 0 2px 10px rgba(231, 76, 60, 0.2);
-        }
-        
-        .crisis-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-        }
-        
-        .stat-item {
-            background: linear-gradient(135deg, #ffffff, #f8f9fa);
-            padding: 40px 30px;
-            border-radius: 15px;
-            box-shadow: 
-                0 10px 30px rgba(0,0,0,0.1),
-                0 1px 8px rgba(0,0,0,0.1);
-            opacity: 0;
-            transform: translateY(30px) scale(0.95);
-            transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .stat-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #e74c3c, #f39c12);
-        }
-        
-        .stat-item.animate {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-        
-        .stat-item:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 
-                0 20px 40px rgba(0,0,0,0.15),
-                0 1px 8px rgba(0,0,0,0.1);
-        }
-        
-        .stat-number {
-            font-size: 3.5rem;
-            font-weight: 300;
-            color: #e74c3c;
-            display: block;
-            margin-bottom: 15px;
-            text-shadow: 0 2px 10px rgba(231, 76, 60, 0.3);
-        }
-        
-        .stat-label {
-            font-size: 1.1rem;
-            color: #555;
-            line-height: 1.5;
-            font-weight: 400;
-        }
-        
-        .quote-section {
-            background: 
-                radial-gradient(circle at 30% 70%, rgba(155, 89, 182, 0.2) 0%, transparent 50%),
-                radial-gradient(circle at 70% 30%, rgba(142, 68, 173, 0.2) 0%, transparent 50%),
-                linear-gradient(135deg, #9b59b6, #8e44ad);
-            color: white;
-            padding: 80px 40px;
-            margin: 0;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .quote-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20,20 Q50,5 80,20 Q95,50 80,80 Q50,95 20,80 Q5,50 20,20" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/><path d="M30,30 Q50,20 70,30 Q80,50 70,70 Q50,80 30,70 Q20,50 30,30" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/></svg>');
-            animation: floatPattern 20s linear infinite;
-        }
-        
-        @keyframes floatPattern {
-            0% { transform: translateX(0) translateY(0); }
-            100% { transform: translateX(-100px) translateY(-50px); }
-        }
-        
-        .quote-content {
-            max-width: 800px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .quote-text {
-            font-size: 1.5rem;
-            font-style: italic;
-            line-height: 1.7;
-            margin-bottom: 25px;
-            position: relative;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-        
-        .quote-text::before {
-            content: '"';
-            font-size: 4rem;
-            position: absolute;
-            left: -30px;
-            top: -20px;
-            color: rgba(255,255,255,0.3);
-            font-family: serif;
-        }
-        
-        .quote-text::after {
-            content: '"';
-            font-size: 4rem;
-            position: absolute;
-            right: -30px;
-            bottom: -40px;
-            color: rgba(255,255,255,0.3);
-            font-family: serif;
-        }
-        
-        .quote-author {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            font-weight: 300;
-            letter-spacing: 1px;
-        }
-        
-        .campus-transformation {
-            background: #f8f9fa;
-            padding: 60px 20px;
-            text-align: center;
-        }
-        
-        .transformation-content {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .transformation-visual {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            margin: 40px 0;
-            align-items: center;
-        }
-        
-        .before-after {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .before-after h3 {
-            font-size: 1.3rem;
-            margin-bottom: 20px;
-            color: #2c3e50;
-        }
-        
-        .lawn-visual {
-            height: 120px;
-            background: linear-gradient(to bottom, #32cd32, #228b22);
-            border-radius: 5px;
-            margin-bottom: 15px;
-            position: relative;
-        }
-        
-        .meadow-visual {
-            height: 120px;
-            background: linear-gradient(to bottom, #daa520 20%, #8fbc8f 50%, #228b22 80%);
-            border-radius: 5px;
-            margin-bottom: 15px;
-            position: relative;
-            opacity: 0;
-            transition: opacity 1.5s ease;
-        }
-        
-        .meadow-visual.visible {
-            opacity: 1;
-        }
-        
-        .meadow-visual::after {
-            content: '';
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            right: 10px;
-            bottom: 10px;
-            background: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 2px,
-                rgba(255,255,255,0.1) 2px,
-                rgba(255,255,255,0.1) 4px
-            );
-            border-radius: 3px;
-        }
-        
-        .cta-section {
-            background: linear-gradient(135deg, #2c3e50, #34495e);
-            color: white;
-            padding: 80px 20px;
-            text-align: center;
-        }
-        
-        .cta-button {
-            display: inline-block;
-            padding: 18px 35px;
-            background: linear-gradient(135deg, #e67e22, #f39c12);
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-top: 30px;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(230, 126, 34, 0.4);
-        }
-        
-        .scroll-indicator {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: white;
-            animation: bounce 2s infinite;
-            opacity: 0.7;
-        }
-        
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
-            40% { transform: translateX(-50%) translateY(-10px); }
-            60% { transform: translateX(-50%) translateY(-5px); }
-        }
-        
-        @media (max-width: 768px) {
-            .content-section {
-                padding: 40px 20px;
-            }
-            
-            .crisis-stats {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .transformation-visual {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            
-            .content-section h2 {
-                font-size: 1.8rem;
-            }
-        }
-    </style>
+        // Apply texture to sky
+        const texture = new THREE.CanvasTexture(canvas);
+        this.el.setAttribute('material', 'src', texture);
+        console.log('Gradient sky texture applied');
+      }
+    });
+    
+    // Log when scene is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Scene DOM loaded');
+      const scene = document.querySelector('a-scene');
+      if (scene) {
+        scene.addEventListener('loaded', function() {
+          console.log('A-Frame scene fully loaded');
+          console.log('Total entities:', document.querySelectorAll('a-entity').length);
+        });
+      }
+    });
+  </script>
 </head>
 <body>
-    <div class="progress-bar"></div>
+  <a-scene>
+    <!-- Assets -->
+    <a-assets>
+      <!-- No assets needed -->
+    </a-assets>
     
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">Pollinator Conservation</div>
-            <div>Environmental Science</div>
-        </div>
-    </header>
+    <!-- Gradient sunset sky -->
+    <a-sky gradient-sky></a-sky>
     
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Saving Our Pollinators</h1>
-        </div>
-        
-        <div class="scroll-indicator">
-            <svg width="20" height="30" viewBox="0 0 20 30" fill="currentColor">
-                <path d="M10 25 L5 20 L15 20 Z"/>
-            </svg>
-        </div>
-    </section>
+    <!-- Large fluffy white clouds - positioned much higher in sky -->
+    <a-entity position="-45 50 -35">
+      <a-sphere radius="4" color="#ffffff" opacity="0.95"></a-sphere>
+      <a-sphere position="5 0 0" radius="3.5" color="#ffffff" opacity="0.95"></a-sphere>
+      <a-sphere position="-4 0 1" radius="3.8" color="#ffffff" opacity="0.95"></a-sphere>
+      <a-sphere position="2 2 0" radius="3" color="#ffffff" opacity="0.95"></a-sphere>
+      <a-sphere position="-2 2 1" radius="2.5" color="#ffffff" opacity="0.95"></a-sphere>
+    </a-entity>
     
-    <section class="content-section">
-        <p>Traveling from the Hudson Valley to Martha's Vineyard, pollinator ecologist Molly Jacobson spends a lot of her time educating communities about their native pollinator problems. Her entire career has been dedicated to solving the ongoing problem of dying bees, and hosting traveling lectures is a big part of that. Another part happens back home in Syracuse, New York, where Jacobson spends her time collecting from nearby nature and then closely studying all manner of bees, butterflies, wasps and moths.</p>
-    </section>
+    <a-entity position="50 55 -45">
+      <a-sphere radius="4.5" color="#ffffff" opacity="0.9"></a-sphere>
+      <a-sphere position="6 0 0" radius="4" color="#ffffff" opacity="0.9"></a-sphere>
+      <a-sphere position="-5 0 1" radius="3.5" color="#ffffff" opacity="0.9"></a-sphere>
+      <a-sphere position="3 2 0" radius="3.2" color="#ffffff" opacity="0.9"></a-sphere>
+    </a-entity>
     
-    <section class="stat-section">
-        <div class="stat-container">
-            <h2>The Scale of the Crisis</h2>
-            <div class="crisis-stats">
-                <div class="stat-item">
-                    <span class="stat-number" data-target="40">0</span>
-                    <span class="stat-label">% of pollinating species are potentially at risk for extinction</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" data-target="15">0</span>
-                    <span class="stat-label">billion dollars worth of US agricultural production depends on pollination annually</span>
-                </div>
-            </div>
-        </div>
-    </section>
+    <a-entity position="5 60 -70">
+      <a-sphere radius="5" color="#ffffff" opacity="0.88"></a-sphere>
+      <a-sphere position="7 0 0" radius="4.5" color="#ffffff" opacity="0.88"></a-sphere>
+      <a-sphere position="-6 0 1" radius="4" color="#ffffff" opacity="0.88"></a-sphere>
+      <a-sphere position="3 2 0" radius="3.5" color="#ffffff" opacity="0.88"></a-sphere>
+      <a-sphere position="-3 2 1" radius="3" color="#ffffff" opacity="0.88"></a-sphere>
+    </a-entity>
     
-    <section class="content-section">
-        <p>Research has shown that up to 40% of pollinating species are potentially at risk for extinction due to factors such as pesticide use, habitat destruction and climate change. Every year, in the United States alone, billions of dollars worth of agricultural production depend on pollination.</p>
-        
-        <p>In April of 2022, the State University of New York College of Environmental Science and Forestry (SUNY-ESF) became an official affiliate of Bee Campus USA–a national initiative in universities and cities across the country focused on conserving the populations of native pollinators–with Jacobson leading the charge as co-chair. Over the past few years, she and her team have worked to make SUNY-ESF's campus a more habitable and attractive place for native pollinators.</p>
-        
-        <p>Recruiting students to the program was not hard, according to Jacobson. With an entire school dedicated to the study of environmental science, the draw of increased biodiversity on campus through Bee Campus projects was appealing to all sorts of students. Whether they were students focused on botany, or students interested in birds, everyone could benefit from Bee Campus.</p>
-    </section>
+    <a-entity position="60 48 20">
+      <a-sphere radius="3.5" color="#ffffff" opacity="0.92"></a-sphere>
+      <a-sphere position="4 0 0" radius="3" color="#ffffff" opacity="0.92"></a-sphere>
+      <a-sphere position="-3 0 1" radius="2.8" color="#ffffff" opacity="0.92"></a-sphere>
+    </a-entity>
     
-    <section class="content-section">
-        <p>Brooke Shaw, a student at SUNY-ESF, met Jacobson after choosing to feature her work for Bee Campus in an environmental journalism class, and after speaking with her, Shaw got a better understanding of the current issues facing native pollinators. She applied for the field technician position soon after.</p>
-        
-        <p>"I was so impressed, enthralled really, with her work," said Shaw, of Jacobson.</p>
-        
-        <p>Growing up in a rural part of Vermont, Shaw has always felt a deep love for nature. After taking an environmental science class in high school, she knew she wanted to commit her life to protecting the world around her. Every being deserves a chance at a happy, healthy life, according to Shaw.</p>
-    </section>
+    <a-entity position="-55 58 15">
+      <a-sphere radius="3.8" color="#ffffff" opacity="0.91"></a-sphere>
+      <a-sphere position="4.5 0 0" radius="3.2" color="#ffffff" opacity="0.91"></a-sphere>
+    </a-entity>
     
-    <section class="quote-section">
-        <div class="quote-content">
-            <p class="quote-text">"Anyone has the capacity to tap into a love and a drive that propels them in a positive way. I think that a lot of times, the ability to rest on one's laurels comes from difficult experiences, but I think that [difficult experiences] can also humble you, and give you the perspective of wanting to give what you can."</p>
-            <p class="quote-author">— Brooke Shaw</p>
-        </div>
-    </section>
+    <a-entity position="0 65 -80">
+      <a-sphere radius="4.2" color="#ffffff" opacity="0.89"></a-sphere>
+      <a-sphere position="5 0 0" radius="3.8" color="#ffffff" opacity="0.89"></a-sphere>
+      <a-sphere position="-4 0 1" radius="3.5" color="#ffffff" opacity="0.89"></a-sphere>
+    </a-entity>
     
-    <section class="content-section">
-        <p>And with that love, Shaw committed herself to the work of Bee Campus. Along with hands-on work collecting pollinators for Jacobson to study, educating others also took up a big part of her time. If she saw students observing the quad meadow or pollinator garden on campus, she would often take a minute to speak with them, and help educate them on the importance of native pollinators.</p>
-        
-        <p>One project worked on by the members of Bee Campus was the creation of a meadow out of a chunk of SUNY-ESF's main quad. This project was completed under the guidance of Jacobson and Sam Quinn, the Director of Conservation on Private Lands Initiative at SUNY-ESF. Quinn and his team have worked on similar projects in the past within central New York, helping landowners around Skaneateles Lake convert their lawns or land into meadows.</p>
-        
-        <p>Last year, Jacobson went to Quinn with her idea to turn part of the quad into a meadow. She then worked to figure out what types of plants should be used in order to bring in more native pollinators and overall diversify the ecosystem beyond.</p>
-        
-        <p>"We collaborate because obviously, I make the habitat for the pollinators she studies," said Quinn.</p>
-    </section>
+    <!-- Rich green grass field with subtle texture variation -->
+    <a-plane position="0 0 0" rotation="-90 0 0" width="70" height="105" color="#2d8e3f"></a-plane>
     
-    <section class="campus-transformation">
-        <div class="transformation-content">
-            <h2>Campus Transformation</h2>
-            <p>Alongside interested students, they were able to convert a large part of the quad into a biodiverse meadow.</p>
-            
-            <div class="transformation-visual">
-                <div class="before-after">
-                    <h3>Before: Manicured Lawn</h3>
-                    <div class="lawn-visual"></div>
-                    <p>Traditional campus landscaping with limited biodiversity</p>
-                </div>
-                <div class="before-after">
-                    <h3>After: Native Meadow</h3>
-                    <div class="meadow-visual"></div>
-                    <p>Diverse ecosystem supporting native pollinators and wildlife</p>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- Grass texture patches - larger areas for visible texture -->
+    <a-plane position="10 0.005 15" rotation="-90 0 0" width="8" height="8" color="#1e7d32" opacity="0.3"></a-plane>
+    <a-plane position="-12 0.005 -10" rotation="-90 0 0" width="9" height="9" color="#3a9d4f" opacity="0.25"></a-plane>
+    <a-plane position="15 0.005 -20" rotation="-90 0 0" width="7" height="7" color="#1e7d32" opacity="0.3"></a-plane>
+    <a-plane position="-18 0.005 20" rotation="-90 0 0" width="10" height="10" color="#2d8e3f" opacity="0.2"></a-plane>
+    <a-plane position="5 0.005 -8" rotation="-90 0 0" width="6" height="6" color="#3a9d4f" opacity="0.3"></a-plane>
+    <a-plane position="-8 0.005 12" rotation="-90 0 0" width="8" height="8" color="#1e7d32" opacity="0.25"></a-plane>
+    <a-plane position="20 0.005 5" rotation="-90 0 0" width="7" height="7" color="#2d8e3f" opacity="0.3"></a-plane>
+    <a-plane position="-15 0.005 -25" rotation="-90 0 0" width="9" height="9" color="#3a9d4f" opacity="0.2"></a-plane>
     
-    <section class="quote-section">
-        <div class="quote-content">
-            <p class="quote-text">"I think one of the big things that has really gotten student attention is just making ESF outwardly look more aligned with what we teach inwardly. And so instead of having a manicured lawn everywhere, when we teach all about Habitat Conservation and land management and the importance of native habitat, why would we have a big lawn?"</p>
-            <p class="quote-author">— Molly Jacobson</p>
-        </div>
-    </section>
+    <!-- Field Lines -->
+    <!-- Sidelines -->
+    <a-box position="0 0.01 -52.5" width="70" height="0.02" depth="0.15" color="#ffffff"></a-box>
+    <a-box position="0 0.01 52.5" width="70" height="0.02" depth="0.15" color="#ffffff"></a-box>
     
-    <section class="content-section">
-        <p>The quad meadow project was one of Bee Campus' biggest successes–something that attracted all types of students with all different interests, according to Jacobson. And with the help of team members like Shaw, students visiting this meadow could learn a little more about the conservation efforts of native pollinators, and how the meadow contributes to that.</p>
-        
-        <p>Just as native pollinators thrive on diversity, so does Bee Campus. Bringing together like-minded individuals connected by their love for the environment has helped establish many pollinator conservation focused projects on and off campus. The program itself follows the principles of ecological diversity Shaw defined–one based in interconnectedness.</p>
-    </section>
+    <!-- End lines -->
+    <a-box position="-35 0.01 0" width="0.15" height="0.02" depth="105" color="#ffffff"></a-box>
+    <a-box position="35 0.01 0" width="0.15" height="0.02" depth="105" color="#ffffff"></a-box>
     
-    <section class="quote-section">
-        <div class="quote-content">
-            <p class="quote-text">"The more diverse, the stronger an ecosystem is. It is more resilient and more able to function as a collective when there are specialized insects and animals and plants that co-evolve. If you get rid of one thing, a domino effect will occur, and it will affect all aspects of [the ecosystem]."</p>
-            <p class="quote-author">— Brooke Shaw</p>
-        </div>
-    </section>
+    <!-- Halfway line -->
+    <a-box position="0 0.01 0" width="70" height="0.02" depth="0.15" color="#ffffff"></a-box>
     
-    <section class="cta-section">
-        <h2 style="font-size: 2.2rem; margin-bottom: 20px; font-weight: normal;">The Future of Conservation</h2>
-        <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto; line-height: 1.6;">Through education, habitat creation, and community engagement, programs like Bee Campus USA are creating a network of pollinator sanctuaries across the country. Every campus, every community, and every individual has the power to make a difference.</p>
-        <a href="#" class="cta-button" onclick="alert('Visit beecampususa.org to learn how your community can participate in pollinator conservation!')">Learn More</a>
-    </section>
-
-    <script>
-        // Progress bar and header visibility
-        window.addEventListener('scroll', () => {
-            const scrolled = (window.pageYOffset / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
-            document.querySelector('.progress-bar').style.width = scrolled + '%';
-            
-            const header = document.querySelector('.header');
-            if (window.pageYOffset > 100) {
-                header.classList.add('visible');
-            } else {
-                header.classList.remove('visible');
-            }
-        });
-        
-        // Intersection Observer for animations
-        const observerOptions = {
-            threshold: 0.2,
-            rootMargin: '0px 0px -50px 0px'
-        };
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    
-                    // Animate statistics
-                    if (entry.target.classList.contains('stat-section')) {
-                        animateStats();
-                    }
-                    
-                    // Trigger meadow transformation
-                    if (entry.target.classList.contains('campus-transformation')) {
-                        setTimeout(() => {
-                            document.querySelector('.meadow-visual').classList.add('visible');
-                        }, 500);
-                    }
-                }
-            });
-        }, observerOptions);
-        
-        // Observe all sections
-        document.querySelectorAll('.content-section, .stat-section, .campus-transformation, .quote-section').forEach(section => {
-            observer.observe(section);
-        });
-        
-        // Animate statistics
-        function animateStats() {
-            document.querySelectorAll('.stat-item').forEach((item, index) => {
-                setTimeout(() => {
-                    item.classList.add('animate');
-                    const numberEl = item.querySelector('.stat-number');
-                    const target = parseInt(numberEl.dataset.target);
-                    animateNumber(numberEl, target, 2000);
-                }, index * 300);
-            });
-        }
-        
-        function animateNumber(element, target, duration) {
-            let start = 0;
-            const increment = target / (duration / 16);
-            
-            const timer = setInterval(() => {
-                start += increment;
-                if (start >= target) {
-                    element.textContent = target;
-                    clearInterval(timer);
-                } else {
-                    element.textContent = Math.floor(start);
-                }
-            }, 16);
-        }
-    </script>
+    <!-- Center circle -->
+    <a-torus position="0 0.02 0" rotation="-90 0 0" radius="9.15" radius-tubular="0.075" color="#ffffff"></a-torus>
+    <a-circle position="0 0.03 0" rotation="-90 0 0" radius="0.3" color="#ffffff"></a-circle>
+    
+    <!-- Penalty area - North goal -->
+    <a-box position="0 0.01 -41" width="40.3" height="0.02" depth="0.15" color="#ffffff"></a-box>
+    <a-box position="-20.15 0.01 -30.9" width="0.15" height="0.02" depth="20.3" color="#ffffff"></a-box>
+    <a-box position="20.15 0.01 -30.9" width="0.15" height="0.02" depth="20.3" color="#ffffff"></a-box>
+    
+    <!-- Goal area - North goal -->
+    <a-box position="0 0.01 -46.5" width="18.3" height="0.02" depth="0.15" color="#ffffff"></a-box>
+    <a-box position="-9.15 0.01 -41.4" width="0.15" height="0.02" depth="10.3" color="#ffffff"></a-box>
+    <a-box position="9.15 0.01 -41.4" width="0.15" height="0.02" depth="10.3" color="#ffffff"></a-box>
+    
+    <!-- Penalty area - South goal -->
+    <a-box position="0 0.01 41" width="40.3" height="0.02" depth="0.15" color="#ffffff"></a-box>
+    <a-box position="-20.15 0.01 30.9" width="0.15" height="0.02" depth="20.3" color="#ffffff"></a-box>
+    <a-box position="20.15 0.01 30.9" width="0.15" height="0.02" depth="20.3" color="#ffffff"></a-box>
+    
+    <!-- Goal area - South goal -->
+    <a-box position="0 0.01 46.5" width="18.3" height="0.02" depth="0.15" color="#ffffff"></a-box>
+    <a-box position="-9.15 0.01 41.4" width="0.15" height="0.02" depth="10.3" color="#ffffff"></a-box>
+    <a-box position="9.15 0.01 41.4" width="0.15" height="0.02" depth="10.3" color="#ffffff"></a-box>
+    
+    <!-- Penalty spots -->
+    <a-circle position="0 0.03 -41" rotation="-90 0 0" radius="0.2" color="#ffffff"></a-circle>
+    <a-circle position="0 0.03 41" rotation="-90 0 0" radius="0.2" color="#ffffff"></a-circle>
+    
+    <!-- North Goal -->
+    <a-entity position="0 0 -52.5">
+      <!-- Goal posts -->
+      <a-cylinder position="-3.66 1.22 0" radius="0.06" height="2.44" color="#ffffff"></a-cylinder>
+      <a-cylinder position="3.66 1.22 0" radius="0.06" height="2.44" color="#ffffff"></a-cylinder>
+      <!-- Crossbar -->
+      <a-cylinder position="0 2.44 0" radius="0.06" height="7.32" rotation="0 0 90" color="#ffffff"></a-cylinder>
+      <!-- Net -->
+      <a-plane position="0 1.22 0.5" width="7.32" height="2.44" color="#cccccc" opacity="0.3" wireframe="true"></a-plane>
+    </a-entity>
+    
+    <!-- South Goal -->
+    <a-entity position="0 0 52.5">
+      <!-- Goal posts -->
+      <a-cylinder position="-3.66 1.22 0" radius="0.06" height="2.44" color="#ffffff"></a-cylinder>
+      <a-cylinder position="3.66 1.22 0" radius="0.06" height="2.44" color="#ffffff"></a-cylinder>
+      <!-- Crossbar -->
+      <a-cylinder position="0 2.44 0" radius="0.06" height="7.32" rotation="0 0 90" color="#ffffff"></a-cylinder>
+      <!-- Net -->
+      <a-plane position="0 1.22 -0.5" width="7.32" height="2.44" color="#cccccc" opacity="0.3" wireframe="true"></a-plane>
+    </a-entity>
+    
+    <!-- SCOREBOARD - On sideline, standing on ground -->
+    <a-entity position="38 0 0" rotation="0 -90 0">
+      <!-- Support posts from ground -->
+      <a-cylinder position="-8 3.5 0" radius="0.25" height="7" color="#555555"></a-cylinder>
+      <a-cylinder position="8 3.5 0" radius="0.25" height="7" color="#555555"></a-cylinder>
+      
+      <!-- Horizontal support beam -->
+      <a-box position="0 7 0" width="16.5" height="0.3" depth="0.3" color="#555555"></a-box>
+      
+      <!-- Main scoreboard frame -->
+      <a-box position="0 10 0" width="20" height="5" depth="0.4" color="#1a1a1a"></a-box>
+      
+      <!-- Black border -->
+      <a-box position="0 10 0.22" width="19.4" height="4.4" depth="0.05" color="#000000"></a-box>
+      
+      <!-- Display background -->
+      <a-box position="0 10 0.26" width="18.5" height="3.8" depth="0.05" color="#0a0a0a"></a-box>
+      
+      <!-- HOME section -->
+      <a-text value="HOME" position="-7 11.2 0.3" scale="1.3 1.3 1.3" color="#ffffff" align="center"></a-text>
+      <a-box position="-7 9.5 0.28" width="4" height="2" depth="0.02" color="#1a1a1a"></a-box>
+      <a-text value="2" position="-7 9.5 0.32" scale="3.5 3.5 3.5" color="#FF3333" align="center"></a-text>
+      
+      <!-- AWAY section -->
+      <a-text value="AWAY" position="7 11.2 0.3" scale="1.3 1.3 1.3" color="#ffffff" align="center"></a-text>
+      <a-box position="7 9.5 0.28" width="4" height="2" depth="0.02" color="#1a1a1a"></a-box>
+      <a-text value="1" position="7 9.5 0.32" scale="3.5 3.5 3.5" color="#FF3333" align="center"></a-text>
+      
+      <!-- TIME section -->
+      <a-text value="TIME" position="0 11.2 0.3" scale="1 1 1" color="#ffffff" align="center"></a-text>
+      <a-box position="0 9.5 0.28" width="3.5" height="1.5" depth="0.02" color="#1a1a1a"></a-box>
+      <a-text value="72:15" position="0 9.5 0.32" scale="2 2 2" color="#00FF00" align="center"></a-text>
+      
+      <!-- Base platform -->
+      <a-box position="0 0.15 0" width="18" height="0.3" depth="1" color="#333333"></a-box>
+    </a-entity>
+    
+    <!-- Soccer Ball at center - more detailed -->
+    <a-entity position="0 0.22 0">
+      <a-sphere radius="0.22" color="#ffffff" segments-height="20" segments-width="20" metalness="0.3" roughness="0.7"></a-sphere>
+      <!-- Black hexagon and pentagon patterns -->
+      <a-circle position="0 0 0.225" radius="0.065" color="#000000"></a-circle>
+      <a-circle position="0.12 0.16 0.14" radius="0.055" color="#000000" rotation="0 45 30"></a-circle>
+      <a-circle position="-0.12 0.16 0.14" radius="0.055" color="#000000" rotation="0 -45 30"></a-circle>
+      <a-circle position="0.18 -0.08 0.1" radius="0.05" color="#000000" rotation="0 60 -20"></a-circle>
+      <a-circle position="-0.18 -0.08 0.1" radius="0.05" color="#000000" rotation="0 -60 -20"></a-circle>
+      <a-circle position="0 -0.20 0.08" radius="0.055" color="#000000" rotation="0 0 -45"></a-circle>
+      <!-- Stitching effect -->
+      <a-torus position="0 0 0.22" radius="0.065" radius-tubular="0.003" color="#888888" rotation="0 0 0"></a-torus>
+    </a-entity>
+    
+ 
+    <!-- West side bleachers (left sideline) -->
+    <a-entity position="-43 0 0" rotation="0 90 0">
+      <!-- Row 1 -->
+      <a-box position="0 0.5 0" width="80" height="0.5" depth="3" color="#8B4513"></a-box>
+      <a-box position="0 0.75 -1.5" width="80" height="0.02" depth="3" color="#A0522D"></a-box>
+      <!-- Row 2 -->
+      <a-box position="0 1.5 -3" width="80" height="0.5" depth="3" color="#8B4513"></a-box>
+      <a-box position="0 1.75 -4.5" width="80" height="0.02" depth="3" color="#A0522D"></a-box>
+      <!-- Row 3 -->
+      <a-box position="0 2.5 -6" width="80" height="0.5" depth="3" color="#8B4513"></a-box>
+      <a-box position="0 2.75 -7.5" width="80" height="0.02" depth="3" color="#A0522D"></a-box>
+      <!-- Row 4 -->
+      <a-box position="0 3.5 -9" width="80" height="0.5" depth="3" color="#8B4513"></a-box>
+      <a-box position="0 3.75 -10.5" width="80" height="0.02" depth="3" color="#A0522D"></a-box>
+      <!-- Row 5 -->
+      <a-box position="0 4.5 -12" width="80" height="0.5" depth="3" color="#8B4513"></a-box>
+      <a-box position="0 4.75 -13.5" width="80" height="0.02" depth="3" color="#A0522D"></a-box>
+    </a-entity>
+    
+    <!-- East side bleachers (right sideline) -->
+    <a-entity position="43 0 0" rotation="0 -90 0">
+      <!-- Row 1 -->
+      <a-box position="0 0.5 0" width="80" height="0.5" depth="3" color="#8B4513"></a-box>
+      <a-box position="0 0.75 -1.5" width="80" height="0.02" depth="3" color="#A0522D"></a-box>
+      <!-- Row 2 -->
+      <a-box position="0 1.5 -3" width="80" height="0.5" depth="3" color="#8B4513"></a-box>
+      <a-box position="0 1.75 -4.5" width="80" height="0.02" depth="3" color="#A0522D"></a-box>
+      <!-- Row 3 -->
+      <a-box position="0 2.5 -6" width="80" height="0.5" depth="3" color="#8B4513"></a-box>
+      <a-box position="0 2.75 -7.5" width="80" height="0.02" depth="3" color="#A0522D"></a-box>
+      <!-- Row 4 -->
+      <a-box position="0 3.5 -9" width="80" height="0.5" depth="3" color="#8B4513"></a-box>
+      <a-box position="0 3.75 -10.5" width="80" height="0.02" depth="3" color="#A0522D"></a-box>
+      <!-- Row 5 -->
+      <a-box position="0 4.5 -12" width="80" height="0.5" depth="3" color="#8B4513"></a-box>
+      <a-box position="0 4.75 -13.5" width="80" height="0.02" depth="3" color="#A0522D"></a-box>
+    </a-entity>
+    
+    <!-- Stadium Floodlights - Corner towers -->
+    <!-- North-West corner -->
+    <a-entity position="-40 0 -58">
+      <!-- Light tower pole -->
+      <a-cylinder radius="0.4" height="25" color="#555555" position="0 12.5 0"></a-cylinder>
+      <!-- Light fixtures -->
+      <a-box width="3" height="0.5" depth="2" color="#333333" position="0 25 0"></a-box>
+      <!-- Bright lights -->
+      <a-light type="point" intensity="1.2" distance="80" color="#FFF8DC" position="0 25 0"></a-light>
+      <a-box width="0.8" height="0.3" depth="0.6" color="#FFFFE0" position="-1 25 0" emissive="#FFFFE0" emissive-intensity="2"></a-box>
+      <a-box width="0.8" height="0.3" depth="0.6" color="#FFFFE0" position="0 25 0" emissive="#FFFFE0" emissive-intensity="2"></a-box>
+      <a-box width="0.8" height="0.3" depth="0.6" color="#FFFFE0" position="1 25 0" emissive="#FFFFE0" emissive-intensity="2"></a-box>
+    </a-entity>
+    
+    <!-- North-East corner -->
+    <a-entity position="40 0 -58">
+      <a-cylinder radius="0.4" height="25" color="#555555" position="0 12.5 0"></a-cylinder>
+      <a-box width="3" height="0.5" depth="2" color="#333333" position="0 25 0"></a-box>
+      <a-light type="point" intensity="1.2" distance="80" color="#FFF8DC" position="0 25 0"></a-light>
+      <a-box width="0.8" height="0.3" depth="0.6" color="#FFFFE0" position="-1 25 0" emissive="#FFFFE0" emissive-intensity="2"></a-box>
+      <a-box width="0.8" height="0.3" depth="0.6" color="#FFFFE0" position="0 25 0" emissive="#FFFFE0" emissive-intensity="2"></a-box>
+      <a-box width="0.8" height="0.3" depth="0.6" color="#FFFFE0" position="1 25 0" emissive="#FFFFE0" emissive-intensity="2"></a-box>
+    </a-entity>
+    
+    <!-- South-West corner -->
+    <a-entity position="-40 0 58">
+      <a-cylinder radius="0.4" height="25" color="#555555" position="0 12.5 0"></a-cylinder>
+      <a-box width="3" height="0.5" depth="2" color="#333333" position="0 25 0"></a-box>
+      <a-light type="point" intensity="1.2" distance="80" color="#FFF8DC" position="0 25 0"></a-light>
+      <a-box width="0.8" height="0.3" depth="0.6" color="#FFFFE0" position="-1 25 0" emissive="#FFFFE0" emissive-intensity="2"></a-box>
+      <a-box width="0.8" height="0.3" depth="0.6" color="#FFFFE0" position="0 25 0" emissive="#FFFFE0" emissive-intensity="2"></a-box>
+      <a-box width="0.8" height="0.3" depth="0.6" color="#FFFFE0" position="1 25 0" emissive="#FFFFE0" emissive-intensity="2"></a-box>
+    </a-entity>
+    
+    <!-- South-East corner -->
+    <a-entity position="40 0 58">
+      <a-cylinder radius="0.4" height="25" color="#555555" position="0 12.5 0"></a-cylinder>
+      <a-box width="3" height="0.5" depth="2" color="#333333" position="0 25 0"></a-box>
+      <a-light type="point" intensity="1.2" distance="80" color="#FFF8DC" position="0 25 0"></a-light>
+      <a-box width="0.8" height="0.3" depth="0.6" color="#FFFFE0" position="-1 25 0" emissive="#FFFFE0" emissive-intensity="2"></a-box>
+      <a-box width="0.8" height="0.3" depth="0.6" color="#FFFFE0" position="0 25 0" emissive="#FFFFE0" emissive-intensity="2"></a-box>
+      <a-box width="0.8" height="0.3" depth="0.6" color="#FFFFE0" position="1 25 0" emissive="#FFFFE0" emissive-intensity="2"></a-box>
+    </a-entity>
+    
+    <!-- Lighting -->
+    <a-light type="ambient" intensity="0.6"></a-light>
+    <a-light type="directional" position="-10 10 5" intensity="0.8" color="#FF9E6D"></a-light>
+    <a-light type="directional" position="10 8 -5" intensity="0.5" color="#FFA07A"></a-light>
+    
+    <!-- Camera - You are standing on the field -->
+    <a-camera position="0 1.6 0">
+      <a-cursor></a-cursor>
+    </a-camera>
+    
+  </a-scene>
 </body>
 </html>
