@@ -32,6 +32,376 @@
       }
     });
     
+    // Arrow shooting animation component
+    AFRAME.registerComponent('arrow-shooter', {
+      schema: {
+        interval: {type: 'number', default: 3000}
+      },
+      init: function() {
+        console.log('Arrow shooter component initialized!');
+        this.arrows = [];
+        this.shootArrow = this.shootArrow.bind(this);
+        this.tick = this.tick.bind(this);
+        
+        // Start shooting arrows at intervals
+        this.intervalId = setInterval(this.shootArrow, this.data.interval);
+        
+        // Shoot first arrow immediately to test
+        setTimeout(() => this.shootArrow(), 1000);
+      },
+      
+      shootArrow: function() {
+        console.log('Shooting flaming arrow upward!');
+        const diana = this.el;
+        const dianaPos = diana.getAttribute('position');
+        
+        console.log('Diana position:', dianaPos);
+        
+        // Create arrow as a group
+        const arrow = document.createElement('a-entity');
+        
+        // Arrow shaft (cylinder) - detailed wooden texture
+        const shaft = document.createElement('a-cylinder');
+        shaft.setAttribute('radius', '0.08');
+        shaft.setAttribute('height', '2');
+        shaft.setAttribute('color', '#6B4423');
+        shaft.setAttribute('metalness', '0.2');
+        shaft.setAttribute('roughness', '0.8');
+        arrow.appendChild(shaft);
+        
+        // Arrow tip (cone) - sharp metal point
+        const tip = document.createElement('a-cone');
+        tip.setAttribute('radius-bottom', '0.12');
+        tip.setAttribute('radius-top', '0');
+        tip.setAttribute('height', '0.4');
+        tip.setAttribute('color', '#C0C0C0');
+        tip.setAttribute('metalness', '0.9');
+        tip.setAttribute('roughness', '0.2');
+        tip.setAttribute('position', '0 1.2 0');
+        arrow.appendChild(tip);
+        
+        // Fletching - red feathers at back
+        for (let i = 0; i < 3; i++) {
+          const feather = document.createElement('a-plane');
+          feather.setAttribute('width', '0.25');
+          feather.setAttribute('height', '0.3');
+          feather.setAttribute('color', '#DC143C');
+          feather.setAttribute('position', `0 -0.9 0`);
+          feather.setAttribute('rotation', `0 ${i * 120} 90`);
+          arrow.appendChild(feather);
+        }
+        
+        // Fire ring 1 - outer ring (LARGE)
+        const fireRing1 = document.createElement('a-torus');
+        fireRing1.setAttribute('radius', '0.35');
+        fireRing1.setAttribute('radius-tubular', '0.06');
+        fireRing1.setAttribute('color', '#FF4500');
+        fireRing1.setAttribute('emissive', '#FF4500');
+        fireRing1.setAttribute('emissive-intensity', '3');
+        fireRing1.setAttribute('opacity', '0.7');
+        fireRing1.setAttribute('position', '0 0.2 0');
+        fireRing1.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 800; easing: linear');
+        arrow.appendChild(fireRing1);
+        
+        // Fire ring 2 - middle ring (MEDIUM)
+        const fireRing2 = document.createElement('a-torus');
+        fireRing2.setAttribute('radius', '0.25');
+        fireRing2.setAttribute('radius-tubular', '0.05');
+        fireRing2.setAttribute('color', '#FF6347');
+        fireRing2.setAttribute('emissive', '#FF6347');
+        fireRing2.setAttribute('emissive-intensity', '3.5');
+        fireRing2.setAttribute('opacity', '0.8');
+        fireRing2.setAttribute('position', '0 0 0');
+        fireRing2.setAttribute('animation', 'property: rotation; to: 0 -360 0; loop: true; dur: 600; easing: linear');
+        arrow.appendChild(fireRing2);
+        
+        // Fire ring 3 - inner bright ring (SMALL)
+        const fireRing3 = document.createElement('a-torus');
+        fireRing3.setAttribute('radius', '0.18');
+        fireRing3.setAttribute('radius-tubular', '0.04');
+        fireRing3.setAttribute('color', '#FFD700');
+        fireRing3.setAttribute('emissive', '#FFD700');
+        fireRing3.setAttribute('emissive-intensity', '4');
+        fireRing3.setAttribute('opacity', '0.9');
+        fireRing3.setAttribute('position', '0 -0.2 0');
+        fireRing3.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 400; easing: linear');
+        arrow.appendChild(fireRing3);
+        
+        // Fire particles - glowing spheres (LARGER)
+        for (let i = 0; i < 12; i++) {
+          const particle = document.createElement('a-sphere');
+          const angle = (i / 12) * Math.PI * 2;
+          const radius = 0.3;
+          particle.setAttribute('radius', '0.04');
+          particle.setAttribute('color', i % 2 === 0 ? '#FF8C00' : '#FF4500');
+          particle.setAttribute('emissive', i % 2 === 0 ? '#FF8C00' : '#FF4500');
+          particle.setAttribute('emissive-intensity', '3');
+          particle.setAttribute('position', `${Math.cos(angle) * radius} ${Math.sin(angle) * radius * 0.3} ${Math.sin(angle) * radius}`);
+          particle.setAttribute('animation', `property: position; to: ${Math.cos(angle) * radius * 1.4} ${Math.sin(angle) * radius * 0.5} ${Math.sin(angle) * radius * 1.4}; loop: true; dur: 600; dir: alternate; easing: easeInOutSine`);
+          arrow.appendChild(particle);
+        }
+        
+        // Smoke trail
+        const smoke = document.createElement('a-sphere');
+        smoke.setAttribute('radius', '0.2');
+        smoke.setAttribute('color', '#555555');
+        smoke.setAttribute('opacity', '0.4');
+        smoke.setAttribute('position', '0 -1.2 0');
+        smoke.setAttribute('animation', 'property: scale; to: 1.5 1.5 1.5; loop: true; dur: 500; dir: alternate; easing: easeInOutSine');
+        arrow.appendChild(smoke);
+        
+        // Fire light source (BRIGHTER)
+        const fireLight = document.createElement('a-light');
+        fireLight.setAttribute('type', 'point');
+        fireLight.setAttribute('color', '#FF6600');
+        fireLight.setAttribute('intensity', '2.5');
+        fireLight.setAttribute('distance', '8');
+        fireLight.setAttribute('position', '0 0 0');
+        fireLight.setAttribute('animation', 'property: intensity; to: 3.5; loop: true; dur: 200; dir: alternate; easing: easeInOutSine');
+        arrow.appendChild(fireLight);
+        
+        // Position arrow at Diana's location
+        const startHeight = dianaPos.y + 4;
+        const startX = dianaPos.x;
+        const startZ = dianaPos.z;
+        
+        arrow.setAttribute('position', `${startX} ${startHeight} ${startZ}`);
+        arrow.setAttribute('rotation', '0 0 0'); // Vertical - pointing UP
+        
+        console.log('Flaming arrow created at:', startX, startHeight, startZ);
+        
+        // Add to scene
+        const scene = document.querySelector('a-scene');
+        scene.appendChild(arrow);
+        
+        // CRITICAL: Velocity shoots STRAIGHT UP (positive Y only)
+        const velocity = {
+          x: (Math.random() - 0.5) * 0.05, // Minimal horizontal drift
+          y: 1.2, // STRONG UPWARD velocity
+          z: (Math.random() - 0.5) * 0.05  // Minimal horizontal drift
+        };
+        
+        this.arrows.push({
+          element: arrow,
+          velocity: velocity,
+          lifetime: 0,
+          position: {x: startX, y: startHeight, z: startZ}
+        });
+        
+        console.log('Arrow shooting UP with velocity:', velocity);
+        console.log('Total arrows:', this.arrows.length);
+      },
+      
+      tick: function(time, deltaTime) {
+        if (!deltaTime) return;
+        
+        // Update all arrows
+        for (let i = this.arrows.length - 1; i >= 0; i--) {
+          const arrow = this.arrows[i];
+          arrow.lifetime += deltaTime;
+          
+          // Check if arrow should explode (at peak of arc or after 2 seconds)
+          const shouldExplode = (arrow.velocity.y < 0.1 && arrow.lifetime > 1000) || arrow.lifetime > 2500;
+          
+          if (shouldExplode && !arrow.exploded) {
+            arrow.exploded = true;
+            this.createFirework(arrow.position, arrow.element);
+            // Remove arrow after explosion
+            arrow.element.parentNode.removeChild(arrow.element);
+            this.arrows.splice(i, 1);
+            continue;
+          }
+          
+          // Remove arrow after 12 seconds or if it falls back down below start height
+          if (arrow.lifetime > 12000 || (arrow.velocity.y < 0 && arrow.position.y < 0)) {
+            console.log('Removing arrow');
+            if (arrow.element.parentNode) {
+              arrow.element.parentNode.removeChild(arrow.element);
+            }
+            this.arrows.splice(i, 1);
+            continue;
+          }
+          
+          // Update position with velocity
+          arrow.position.x += arrow.velocity.x;
+          arrow.position.y += arrow.velocity.y;
+          arrow.position.z += arrow.velocity.z;
+          
+          // Apply gravity (pulling down)
+          arrow.velocity.y -= 0.015;
+          
+          // Calculate arrow rotation to point in direction of travel
+          const horizontalDist = Math.sqrt(arrow.velocity.x ** 2 + arrow.velocity.z ** 2);
+          const pitch = -Math.atan2(arrow.velocity.y, Math.max(horizontalDist, 0.01)) * 180 / Math.PI;
+          const yaw = Math.atan2(arrow.velocity.x, arrow.velocity.z) * 180 / Math.PI;
+          
+          arrow.element.setAttribute('position', arrow.position);
+          arrow.element.setAttribute('rotation', `${pitch} ${yaw} 0`);
+        }
+        
+        // Update firework particles
+        if (this.fireworkParticles) {
+          for (let i = this.fireworkParticles.length - 1; i >= 0; i--) {
+            const particle = this.fireworkParticles[i];
+            particle.lifetime += deltaTime;
+            
+            // Remove particle after lifetime expires
+            if (particle.lifetime > particle.maxLifetime) {
+              if (particle.element.parentNode) {
+                particle.element.parentNode.removeChild(particle.element);
+              }
+              this.fireworkParticles.splice(i, 1);
+              continue;
+            }
+            
+            // Update particle position
+            particle.position.x += particle.velocity.x;
+            particle.position.y += particle.velocity.y;
+            particle.position.z += particle.velocity.z;
+            
+            // Apply gravity to particles
+            particle.velocity.y -= 0.01;
+            
+            // Fade out particle
+            const fadeProgress = particle.lifetime / particle.maxLifetime;
+            const opacity = 1 - fadeProgress;
+            
+            particle.element.setAttribute('position', particle.position);
+            particle.element.setAttribute('opacity', Math.max(0, opacity));
+          }
+        }
+      },
+      
+      createFirework: function(position, arrowElement) {
+        console.log('FIREWORK EXPLOSION at', position);
+        
+        if (!this.fireworkParticles) {
+          this.fireworkParticles = [];
+        }
+        
+        const scene = document.querySelector('a-scene');
+        
+        // Firework colors
+        const colors = ['#FF0000', '#FF6600', '#FFD700', '#00FF00', '#0099FF', '#9900FF', '#FF1493', '#00FFFF'];
+        const explosionColor = colors[Math.floor(Math.random() * colors.length)];
+        
+        // Create bright flash at explosion point
+        const flash = document.createElement('a-sphere');
+        flash.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
+        flash.setAttribute('radius', '1');
+        flash.setAttribute('color', '#FFFFFF');
+        flash.setAttribute('emissive', '#FFFFFF');
+        flash.setAttribute('emissive-intensity', '5');
+        flash.setAttribute('opacity', '1');
+        flash.setAttribute('animation', 'property: scale; to: 3 3 3; dur: 300; easing: easeOutQuad');
+        flash.setAttribute('animation__fade', 'property: opacity; to: 0; dur: 300; easing: easeOutQuad');
+        scene.appendChild(flash);
+        
+        // Remove flash after animation
+        setTimeout(() => {
+          if (flash.parentNode) {
+            flash.parentNode.removeChild(flash);
+          }
+        }, 350);
+        
+        // Create explosion light
+        const explosionLight = document.createElement('a-light');
+        explosionLight.setAttribute('type', 'point');
+        explosionLight.setAttribute('color', explosionColor);
+        explosionLight.setAttribute('intensity', '3');
+        explosionLight.setAttribute('distance', '20');
+        explosionLight.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
+        explosionLight.setAttribute('animation', 'property: intensity; to: 0; dur: 1000; easing: easeOutQuad');
+        scene.appendChild(explosionLight);
+        
+        setTimeout(() => {
+          if (explosionLight.parentNode) {
+            explosionLight.parentNode.removeChild(explosionLight);
+          }
+        }, 1100);
+        
+        // Create firework particles (80 particles in all directions)
+        const particleCount = 80;
+        for (let i = 0; i < particleCount; i++) {
+          // Spherical distribution
+          const theta = Math.random() * Math.PI * 2; // Horizontal angle
+          const phi = Math.acos(2 * Math.random() - 1); // Vertical angle for even distribution
+          const speed = 0.3 + Math.random() * 0.4;
+          
+          const velocity = {
+            x: Math.sin(phi) * Math.cos(theta) * speed,
+            y: Math.sin(phi) * Math.sin(theta) * speed,
+            z: Math.cos(phi) * speed
+          };
+          
+          // Create particle
+          const particle = document.createElement('a-sphere');
+          particle.setAttribute('radius', '0.08');
+          particle.setAttribute('color', explosionColor);
+          particle.setAttribute('emissive', explosionColor);
+          particle.setAttribute('emissive-intensity', '2');
+          particle.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
+          scene.appendChild(particle);
+          
+          // Add trailing sparks for some particles
+          if (i % 3 === 0) {
+            const trail = document.createElement('a-sphere');
+            trail.setAttribute('radius', '0.04');
+            trail.setAttribute('color', '#FFD700');
+            trail.setAttribute('emissive', '#FFD700');
+            trail.setAttribute('emissive-intensity', '3');
+            particle.appendChild(trail);
+          }
+          
+          this.fireworkParticles.push({
+            element: particle,
+            velocity: velocity,
+            position: {x: position.x, y: position.y, z: position.z},
+            lifetime: 0,
+            maxLifetime: 1500 + Math.random() * 1000
+          });
+        }
+        
+        // Add secondary burst after small delay
+        setTimeout(() => {
+          const secondaryColor = colors[Math.floor(Math.random() * colors.length)];
+          for (let i = 0; i < 40; i++) {
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            const speed = 0.2 + Math.random() * 0.25;
+            
+            const velocity = {
+              x: Math.sin(phi) * Math.cos(theta) * speed,
+              y: Math.sin(phi) * Math.sin(theta) * speed,
+              z: Math.cos(phi) * speed
+            };
+            
+            const particle = document.createElement('a-sphere');
+            particle.setAttribute('radius', '0.06');
+            particle.setAttribute('color', secondaryColor);
+            particle.setAttribute('emissive', secondaryColor);
+            particle.setAttribute('emissive-intensity', '2.5');
+            particle.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
+            scene.appendChild(particle);
+            
+            this.fireworkParticles.push({
+              element: particle,
+              velocity: velocity,
+              position: {x: position.x, y: position.y, z: position.z},
+              lifetime: 0,
+              maxLifetime: 1200 + Math.random() * 800
+            });
+          }
+        }, 150);
+      },
+      
+      remove: function() {
+        if (this.intervalId) {
+          clearInterval(this.intervalId);
+        }
+      }
+    });
+    
     // Log when scene is ready
     document.addEventListener('DOMContentLoaded', function() {
       console.log('Scene DOM loaded');
@@ -49,7 +419,8 @@
   <a-scene>
     <!-- Assets -->
     <a-assets>
-      <!-- No assets needed -->
+      <a-asset-item id="diana-model" src="https://vlyzifpqemfanxllnmuf.supabase.co/storage/v1/object/public/files/common-assets/3d/diana_1759343915602.glb"></a-asset-item>
+      <a-asset-item id="bench-model" src="https://vlyzifpqemfanxllnmuf.supabase.co/storage/v1/object/public/files/common-assets/3d/kissing-bench_1759343907805.glb"></a-asset-item>
     </a-assets>
     
     <!-- Gradient sunset sky -->
@@ -207,6 +578,12 @@
       <!-- Base platform -->
       <a-box position="0 0.15 0" width="18" height="0.3" depth="1" color="#333333"></a-box>
     </a-entity>
+    
+    <!-- 3D Model - Diana - Large, in front of scoreboard, shooting firework arrows -->
+    <a-entity gltf-model="#diana-model" position="32 0 0" rotation="0 270 0" scale="4 4 4" arrow-shooter="interval: 2500"></a-entity>
+    
+    <!-- 3D Model - Kissing Bench - Small, by bleachers -->
+    <a-entity gltf-model="#bench-model" position="-39 0 5" rotation="0 90 0" scale="0.4 0.4 0.4"></a-entity>
     
     <!-- Soccer Ball at center - more detailed -->
     <a-entity position="0 0.22 0">
